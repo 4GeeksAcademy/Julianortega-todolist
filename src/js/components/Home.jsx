@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const [hoverIndex, setHoverIndex] = useState(-1);
 
   const addTask = (e) => {
     if (e.key === "Enter" && newTask.trim() !== "") {
@@ -18,7 +19,7 @@ const TodoList = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center">Todo List</h1>
+      <h1 className="text-center mb-4">Todo List</h1>
       <input
         type="text"
         className="form-control"
@@ -27,26 +28,41 @@ const TodoList = () => {
         onChange={(e) => setNewTask(e.target.value)}
         onKeyDown={addTask}
       />
+      
+      <div className="mt-2 text-muted">
+        {tasks.length === 0 
+          ? "No tasks" 
+          : `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`}
+      </div>
+
       <ul className="list-group mt-3">
-        {tasks.length === 0 ? (
-          <li className="list-group-item text-muted">No tasks, add a task</li>
-        ) : (
-          tasks.map((task, index) => (
-            <li
-              key={index}
-              className="list-group-item d-flex justify-content-between align-items-center"
+        {tasks.map((task, index) => (
+          <li
+            key={index}
+            className="list-group-item d-flex justify-content-between align-items-center"
+            onMouseEnter={() => setHoverIndex(index)}
+            onMouseLeave={() => setHoverIndex(-1)}
+          >
+            {task}
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => deleteTask(index)}
+              style={{
+                opacity: hoverIndex === index ? 1 : 0,
+                transition: "opacity 0.3s ease"
+              }}
             >
-              {task}
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => deleteTask(index)}
-              >
-                &#10006;
-              </button>
-            </li>
-          ))
-        )}
+              &#10006;
+            </button>
+          </li>
+        ))}
       </ul>
+
+      <style>{`
+        .list-group-item:hover .btn {
+          opacity: 1 !important;
+        }
+      `}</style>
     </div>
   );
 };
